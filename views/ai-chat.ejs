@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat - Founder Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/ai-chat-page.css">
+    <link rel="stylesheet" href="/css/ai-chat.css">
+</head>
+<body>
+
+<div class="ai-chat-container">
+    <div class="ai-chat-header">
+        <a href="/" class="back-button"><i class="fas fa-arrow-left"></i></a>
+        <h1>AI Chat</h1>
+        <button id="clear-chat-btn" class="clear-chat-button">Clear Chat</button>
+    </div>
+    
+    <div id="ai-chat-messages" class="ai-chat-messages"></div>
+    <div class="ai-chat-results"></div>
+    
+    <div class="ai-chat-input-container">
+        <div id="input-attachments" class="input-attachments"></div>
+        <div class="input-row">
+            <label for="image-upload" class="image-upload-label">
+                <i class="fas fa-image"></i>
+            </label>
+            <input type="file" id="image-upload" accept="image/*" multiple style="display: none;">
+            
+            <textarea id="ai-chat-input" placeholder="Type a message or use @commands..."></textarea>
+            
+            <button id="ai-chat-send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Command Suggestions -->
+    <div id="command-suggestions" class="command-suggestions">
+        <div class="suggestions-header">
+            <h3>Command Suggestions</h3>
+            <button id="close-suggestions"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="suggestions-content" class="suggestions-content">
+            <h4>Try these commands:</h4>
+            <div class="command-list">
+                <div class="command-item">@generate bio about [theme]</div>
+                <div class="command-item">@create post about [topic]</div>
+                <div class="command-item">@bio about [theme] and post on [topic]</div>
+                <div class="command-item">@update my bio with [text]</div>
+                <div class="command-item">@refresh my bio</div>
+                <div class="command-item">@send a message to [name]</div>
+                <div class="command-item">@show me profiles of [role]</div>
+                <div class="command-item">@connect me with [name]</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Results Container -->
+    <div id="search-results-container" class="search-results-container">
+        <div class="search-results-header">
+            <h3>Search Results</h3>
+            <button id="close-search-results"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="search-results-content" class="search-results-content"></div>
+    </div>
+</div>
+
+<script src="/js/standalone-ai-chat.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background rounded square -->
+  <rect x="10" y="10" width="80" height="80" rx="15" ry="15" fill="#1a2e3b"/>
+  
+  <!-- Stylized 'F' letter in white -->
+  <path d="M30 25 H70 V35 H40 V45 H65 V55 H40 V75 H30 Z" fill="white"/>
+</svg>

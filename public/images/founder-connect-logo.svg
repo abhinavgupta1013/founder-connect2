@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <!-- Background circle -->
+  <circle cx="250" cy="250" r="200" fill="#4A9FD5"/>
+  
+  <!-- Two people icons (white circles for heads) -->
+  <circle cx="175" cy="175" r="40" fill="#FFF8E7"/>
+  <circle cx="325" cy="175" r="40" fill="#FFF8E7"/>
+  
+  <!-- Body shapes (stylized M shape) -->
+  <path d="M175 215 L175 300 L250 350 L325 300 L325 215" fill="#FFF8E7" stroke="#FFF8E7" stroke-width="5"/>
+</svg>

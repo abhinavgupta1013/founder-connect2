@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Outreach Assistant</title>
+    <link rel="stylesheet" href="/css/common-layout.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-section {
+            margin-bottom: 30px;
+            background-color: #f5f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .results-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        button {
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #3a5ce5;
+        }
+        .email-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #f5f9ff;
+            border-radius: 4px;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .success {
+            color: #5cb85c;
+            font-weight: bold;
+        }
+        .sender-info {
+            display: flex;
+            gap: 10px;
+        }
+        .sender-info input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav-header') %>
+    
+    <div class="container">
+        <h1>AI Outreach Assistant</h1>
+        <p>Find relevant contacts, then approve sending them a custom AI-drafted introduction.</p>
+        
+        <div class="search-section">
+            <h2>Step 1: Find Contacts</h2>
+            <input type="text" id="searchInput" placeholder="Enter topic, e.g., 'investors in renewable energy'">
+            <button id="searchButton">Find Emails</button>
+        </div>
+        
+        <div class="results-section" id="results">
+            <!-- Results will be displayed here -->
+        </div>
+        
+        <div class="email-form" id="emailForm" style="display: none; margin-top: 20px; background-color: #f5f9ff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2>Step 2: Customize Your Introduction</h2>
+            
+            <div class="sender-info">
+                <input type="text" id="fromName" placeholder="Your Name">
+                <input type="email" id="fromEmail" placeholder="Your Email">
+            </div>
+            
+            <textarea id="summaryInput" placeholder="Enter your project summary or intro idea here..."></textarea>
+            
+            <button id="sendButton">Send Introductions</button>
+        </div>
+    </div>
+    
+    <script>
+        // Store emails globally so the send function can access them
+        let foundEmails = [];
+        
+        document.getElementById('searchButton').addEventListener('click', performSearch);
+        document.getElementById('sendButton').addEventListener('click', sendIntroductions);
+        
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            foundEmails = []; // Reset the list
+            
+            if (!query) {
+                alert('Please enter a topic to search.');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p class="loading">Searching the web for emails...</p>';
+            
+            try {
+                const response = await fetch('/api/web-search/ai-outreach/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const data = await response.json();
+                foundEmails = data.emails;
+                resultsDiv.innerHTML = ''; // Clear loading message
+                
+                if (foundEmails && foundEmails.length > 0) {
+                    resultsDiv.innerHTML += `<h3>Found ${foundEmails.length} emails:</h3>`;
+                    
+                    foundEmails.forEach(email => {
+                        const emailEl = document.createElement('div');
+                        emailEl.className = 'email-item';
+                        emailEl.textContent = email;
+                        resultsDiv.appendChild(emailEl);
+                    });
+                    
+                    // Show the email form
+                    document.getElementById('emailForm').style.display = 'block';
+                } else {
+                    resultsDiv.innerHTML = '<p>No emails found. Try a different search query.</p>';
+                    document.getElementById('emailForm').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<p class="error">Error searching for emails. Please try again later.</p>';
+                document.getElementById('emailForm').style.display = 'none';
+            }
+        }
+        
+        async function sendIntroductions() {
+            if (foundEmails.length === 0) {
+                alert('No emails found. Please search for contacts first.');
+                return;
+            }
+            
+            const fromName = document.getElementById('fromName').value.trim();
+            const fromEmail = document.getElementById('fromEmail').value.trim();
+            const projectSummary = document.getElementById('summaryInput').value.trim();
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (!fromName || !fromEmail || !projectSummary) {
+                alert('Please fill in all fields.');
+                return;
+            }
+            
+            const sendButton = document.getElementById('sendButton');
+            sendButton.textContent = 'Sending...';
+            sendButton.disabled = true;
+            
+            try {
+                const response = await fetch('/api/web-search/ai-outreach/send-intro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        emails: foundEmails,
+                        query: query,
+                        project_summary: projectSummary,
+                        fromName: fromName,
+                        fromEmail: fromEmail
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML += `<p class="success">${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error sending introductions. Please try again later.');
+            } finally {
+                sendButton.textContent = 'Send Introductions';
+                sendButton.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

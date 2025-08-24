@@ -1,0 +1,245 @@
+:root {
+    --primary-color: #1E88E5;
+    --success-color: #4CAF50;
+    --error-color: #F44336;
+    --warning-color: #FF9800;
+    --info-color: #2196F3;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --background-light: #f8f9fa;
+    --background-white: #ffffff;
+    --border-color: #e2e8f0;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --shadow-medium: rgba(0, 0, 0, 0.1);
+}
+
+.container.notification-page-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: var(--background-white);
+    border-radius: 12px; /* Slightly more rounded corners */
+    box-shadow: 0 6px 20px var(--shadow-medium); /* Enhanced shadow */
+}
+
+.notification-page-container h1 {
+    font-size: 2.2rem; /* Slightly larger title */
+    font-weight: 700; /* Bolder */
+    margin-bottom: 1.8rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.8rem;
+    text-align: center; /* Center the title */
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px; /* Increased padding */
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease; /* Smooth transition for all properties */
+    position: relative;
+    background-color: var(--background-white); /* Ensure background is white by default */
+    border-radius: 8px; /* Rounded corners for individual items */
+    margin-bottom: 10px; /* Space between items */
+    box-shadow: 0 2px 8px var(--shadow-light); /* Subtle shadow for items */
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item.unread {
+    background-color: #e3f2fd; /* Lighter blue for unread */
+    border-left: 5px solid var(--primary-color); /* Thicker border */
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.15); /* Shadow for unread */
+}
+
+.notification-item.read {
+    background-color: var(--background-white);
+    opacity: 0.8; /* Slightly dim read notifications */
+}
+
+.notification-item:hover {
+    background-color: #f0f8ff; /* Lighter hover effect */
+    transform: translateY(-2px); /* Lift effect on hover */
+    box-shadow: 0 4px 15px var(--shadow-medium); /* More pronounced shadow on hover */
+}
+
+/* Profile Picture Section */
+.notification-profile {
+    margin-right: 15px; /* Increased margin */
+    flex-shrink: 0;
+}
+
+.profile-pic {
+    width: 50px; /* Larger profile picture */
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color); /* More prominent border */
+    box-shadow: 0 2px 6px var(--shadow-light);
+}
+
+.profile-pic-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); /* Brighter gradient */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px; /* Larger icon */
+    box-shadow: 0 2px 6px var(--shadow-light);
+}
+
+/* Content Section */
+.notification-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.notification-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Increased gap */
+}
+
+/* Type Icon - Small indicator */
+.notification-type-icon {
+    position: absolute;
+    top: 10px; /* Adjusted position */
+    right: 10px;
+    font-size: 14px; /* Slightly larger icon */
+    color: var(--text-secondary);
+    opacity: 0.8;
+}
+
+.notification-type-icon .fa-user-plus { color: var(--info-color); }
+.notification-type-icon .fa-user-check { color: var(--success-color); }
+.notification-type-icon .fa-user-times { color: var(--error-color); }
+.notification-type-icon .fa-heart { color: #ff5252; } /* Brighter red */
+.notification-type-icon .fa-comment { color: #4dd0e1; } /* Brighter cyan */
+.notification-type-icon .fa-bell { color: var(--text-secondary); }
+
+.notification-message {
+    margin: 0;
+    font-size: 1rem; /* Slightly larger font */
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.notification-message strong {
+    color: var(--primary-color); /* Primary color for sender name */
+    font-weight: 700; /* Bolder */
+}
+
+.notification-timestamp {
+    font-size: 0.85rem; /* Slightly larger timestamp */
+    color: var(--text-secondary);
+    opacity: 0.9;
+}
+
+/* Action Buttons - Modern Style */
+.notification-actions {
+    display: flex;
+    gap: 10px; /* Increased gap */
+    margin-left: 20px; /* Increased margin */
+    flex-shrink: 0;
+}
+
+.btn-accept,
+.btn-reject {
+    width: 38px; /* Larger buttons */
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px; /* Larger icon */
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px var(--shadow-light); /* More pronounced shadow */
+}
+
+.btn-accept {
+    background: linear-gradient(135deg, #66bb6a, #43a047); /* Deeper green */
+    color: white;
+}
+
+.btn-accept:hover {
+    transform: scale(1.15) translateY(-1px); /* More pronounced lift */
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+.btn-reject {
+    background: linear-gradient(135deg, #ef5350, #e53935); /* Deeper red */
+    color: white;
+}
+
+.btn-reject:hover {
+    transform: scale(1.15) translateY(-1px);
+    box-shadow: 0 6px 15px rgba(244, 67, 54, 0.4);
+}
+
+.btn-accept:active,
+.btn-reject:active {
+    transform: scale(0.9); /* More pronounced press effect */
+    box-shadow: 0 1px 5px var(--shadow-light);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 1rem; /* More padding */
+    color: var(--text-secondary);
+    background-color: var(--background-white);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    margin-top: 20px;
+}
+
+.empty-state .fas {
+    font-size: 4rem; /* Larger icon */
+    margin-bottom: 1.5rem;
+    color: #b0bec5; /* Softer grey */
+}
+
+.empty-state p {
+    font-size: 1.2rem; /* Larger text */
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .notification-page-container h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1.2rem;
+    }
+    .notification-item {
+        flex-direction: column;
+        align-items: flex-start; /* Align items to start in column layout */
+        padding: 15px;
+    }
+    .notification-profile {
+        margin-right: 0;
+        margin-bottom: 10px; /* Space below profile pic */
+    }
+    .notification-actions {
+        margin-left: 0;
+        margin-top: 15px; /* Space above buttons */
+        justify-content: center; /* Center buttons */
+        width: 100%; /* Full width buttons */
+    }
+    .notification-type-icon {
+        top: 15px;
+        right: 15px;
+    }
+}

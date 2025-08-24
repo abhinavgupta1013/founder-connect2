@@ -1,0 +1,107 @@
+/**
+ * notification.css
+ * Styles for the notification component
+ */
+
+#notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+}
+
+.notification {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.notification-show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-hiding {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #666;
+}
+
+.notification-body {
+  padding: 12px 15px;
+}
+
+.notification-body p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Notification types */
+.notification-success {
+  border-left: 4px solid #4caf50;
+}
+
+.notification-success .notification-title {
+  color: #4caf50;
+}
+
+.notification-error {
+  border-left: 4px solid #f44336;
+}
+
+.notification-error .notification-title {
+  color: #f44336;
+}
+
+.notification-info {
+  border-left: 4px solid #2196f3;
+}
+
+.notification-info .notification-title {
+  color: #2196f3;
+}
+
+.notification-warning {
+  border-left: 4px solid #ff9800;
+}
+
+.notification-warning .notification-title {
+  color: #ff9800;
+}
+
+/* Responsive styles */
+@media (max-width: 480px) {
+  #notification-container {
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+}

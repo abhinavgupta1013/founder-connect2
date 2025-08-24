@@ -1,0 +1,199 @@
+<nav class="navbar">
+</nav>
+
+<script src="/socket.io/socket.io.js"></script> <!-- Socket.IO Client Library -->
+<script src="/js/notification.js"></script> <!-- Ensure notification.js is loaded -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Socket.IO for notifications if user is logged in
+     if (typeof user !== 'undefined' && user && user._id) { 
+        const currentUserId = '<%= user._id %>';
+        if (typeof initializeSocketForNotifications === 'function') {
+            initializeSocketForNotifications(currentUserId);
+        } else {
+            console.error('initializeSocketForNotifications function not found. Ensure notification.js is loaded correctly.');
+        }
+    } else { 
+        console.log('User not logged in, not initializing socket for notifications.');
+     } 
+    const notificationButton = document.getElementById('notification-button-header');
+    if (notificationButton) {
+        notificationButton.addEventListener('click', () => {
+            window.location.href = '/notifications';
+        });
+    }
+
+    // Messages button event listener removed
+
+    // Enhanced dropdown logic (if not handled by a global script)
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(toggle => {
+        const menu = toggle.nextElementSibling;
+        if (menu && menu.classList.contains('dropdown-menu')) {
+            toggle.addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevent window click from immediately closing
+                // Close other open dropdowns
+                document.querySelectorAll('.dropdown-menu').forEach(otherMenu => {
+                    if (otherMenu !== menu) {
+                        otherMenu.style.display = 'none';
+                    }
+                });
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            });
+        }
+    });
+
+    // Close dropdown if clicked outside
+    window.addEventListener('click', function(event) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            if (!menu.parentElement.contains(event.target)) {
+                 menu.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+    .main-nav-header {
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        width: 100%;
+    }
+    
+    .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0.8rem 1rem;
+    }
+    
+    .nav-logo a {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color, #1E88E5);
+        text-decoration: none;
+    }
+    
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .nav-link {
+        color: var(--text-secondary, #718096);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+        color: var(--primary-color, #1E88E5);
+        background-color: rgba(30, 136, 229, 0.1);
+    }
+    
+    .nav-actions {
+        display: flex;
+        align-items: center;
+    }
+    
+    .dropdown {
+        position: relative;
+    }
+    
+    .dropdown-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: var(--text-secondary, #718096);
+    }
+    
+    .dropdown-menu {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        min-width: 180px;
+    }
+
+    .nav-action-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.3rem; /* Adjusted size */
+        color: var(--text-secondary, #718096);
+        padding: 0.5rem;
+        margin-right: 0.5rem; /* Spacing from next element */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        transition: background-color 0.2s ease;
+    }
+
+    .nav-action-btn:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    .nav-action-btn i {
+        line-height: 1; /* Ensure icon is centered */
+        /* display: none; */ /* Removed to ensure icons are visible */
+        z-index: 10;
+    }
+    
+    /* Removed CSS hover for dropdown, JS handles click 
+    .dropdown:hover .dropdown-menu {
+        display: block;
+    }
+    */
+    
+    .dropdown-item {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary, #2d3748);
+        text-decoration: none;
+    }
+    
+    .dropdown-item:hover {
+        background-color: var(--background-dark, #f8f9fa);
+    }
+    
+    .dropdown-divider {
+        height: 1px;
+        background-color: var(--border-color, #e2e8f0);
+        margin: 0.5rem 0;
+    }
+    
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    // Add current path to body for active link styling
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (currentPath === href || currentPath.startsWith(href + '/')) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>

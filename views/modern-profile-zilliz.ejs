@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= user.name || 'User' %> Profile - Founder Connect</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/modern-profile.css">
+    <link rel="stylesheet" href="/css/connection.css">
+    <link rel="stylesheet" href="/css/notification.css">
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation header removed to show only profile content -->
+
+    <div class="container">
+        <!-- Store user ID for JavaScript -->
+        <input type="hidden" id="user-id" value="<%= user._id %>">
+        <!-- Store current user ID for JavaScript -->
+        <input type="hidden" id="current-user-id" value="<%= currentUser ? currentUser._id : '' %>">
+        
+        <!-- Profile Header Section -->
+        <div class="profile-header">
+            <div class="back-button">
+                <a href="javascript:history.back()" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+            </div>
+            <div class="cover-photo"></div>
+            <div class="profile-info">
+                <div class="avatar-container">
+                    <div class="avatar">
+                        <% if (user.avatar) { %>
+                            <img src="<%= user.avatar %>" alt="<%= user.name %>">
+                        <% } else { %>
+                            <div class="avatar-placeholder">
+                                <%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+                            </div>
+                        <% } %>
+                        <% if (user._id.toString() === currentUser?._id.toString()) { %>
+                        <div class="avatar-change-indicator" title="Click to change profile picture">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="avatar-options">
+                            <div class="avatar-option upload-photo">
+                                <i class="fas fa-camera"></i> Upload Photo
+                            </div>
+                            <div class="avatar-option remove-photo">
+                                <i class="fas fa-trash"></i> Remove
+                            </div>
+                        </div>
+                        <div class="avatar-edit">
+                            <label for="avatar-input">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="avatar-input" class="avatar-input" accept="image/*">
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="user-details">
+                    <h1 class="user-name"><%= user.name || 'User' %></h1>
+                    <p class="user-title"><%= user.title || 'FOUNDER CONNECT Member' %></p>
+                    <p class="user-location"><% if (user.location) { %><i class="fas fa-map-marker-alt"></i> <%= user.location %><% } %></p>
+                    <div class="user-stats">
+                        <div class="stat">
+                            <span class="stat-value"><%= user.connectionCount || 0 %></span>
+                            <span class="stat-label">Connections</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">0</span>
+                            <span class="stat-label">Posts</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <% if (user._id.toString() === currentUser?._id.toString()) { %>
+                        <!-- Own profile - show edit button -->
+                        <button class="btn btn-primary" id="edit-profile-btn">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-secondary ml-2" id="create-post-btn">
+                            <i class="fas fa-plus-circle"></i> Create Post
+                        </button>
+                    <% } else { %>
+                        <!-- Other user's profile - show connect button -->
+                        <input type="hidden" id="profile-user-id" value="<%= user._id %>">
+                        <% 
+                        let connectionStatus = 'none';
+                        let connectionBtnText = 'Connect';
+                        let connectionBtnAction = 'connect';
+                        let connectionBtnClass = 'btn-primary';
+                        
+                        if (currentUser?.connections?.includes(user._id.toString())) {
+                            connectionStatus = 'connected';
+                            connectionBtnText = 'Connected';
+                            connectionBtnAction = 'disconnect';
+                            connectionBtnClass = 'btn-outline';
+                        } else if (currentUser?.pendingConnections?.includes(user._id.toString())) {
+                            connectionStatus = 'pending';
+                            connectionBtnText = 'Pending...';
+                            connectionBtnAction = 'cancel';
+                            connectionBtnClass = 'btn-outline';
+                        } else if (currentUser?.connectionRequests?.includes(user._id.toString())) {
+                            connectionStatus = 'request';
+                            connectionBtnText = 'Respond';
+                            connectionBtnAction = 'respond';
+                            connectionBtnClass = 'btn-primary';
+                        }
+                        %>
+                        
+                        <button class="btn <%= connectionBtnClass %>" id="connect-button" data-action="<%= connectionBtnAction %>" data-status="<%= connectionStatus %>">
+                            <%= connectionBtnText %>
+                        </button>
+                        <!-- Message button for other users' profiles -->
+                        <button class="btn btn-primary ml-2" id="message-button" data-user-id="<%= user._id %>">
+                            <i class="fas fa-comment"></i> Message
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Tabs - Simplified to a single content area -->
+        <div class="profile-tabs">
+            <div class="tab active" data-tab="content"><i class="fas fa-th"></i> Content</div>
+        </div>
+        
+        <!-- Unified Content Area -->
+        <div class="tab-content">
+            <div class="tab-pane active" id="content-tab">
+                <!-- Create Content Buttons -->
+                <div class="create-content-buttons">
+                    <% if (user._id.toString() === currentUser?._id.toString()) { %>
+                    <a href="/create-post" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Post
+                    </a>
+                    <button class="btn btn-primary" id="add-experience-btn">
+                        <i class="fas fa-briefcase"></i> Add Experience
+                    </button>
+                    <button class="btn btn-primary" id="create-media-btn">
+                        <i class="fas fa-images"></i> Create Media
+                    </button>
+                    <% } %>
+                </div>
+                
+                <!-- Bio Section -->
+                <div class="bio-section">
+                    <div class="bio-content" id="bio-content">
+                        <h3>Bio</h3>
+                        <p><%= user.bio || 'No bio added yet.' %></p>
+                        <% if (user._id.toString() === currentUser?._id.toString()) { %>
+                        <button class="btn btn-primary" data-section="bio">
+                            <i class="fas fa-edit"></i> Edit Bio
+                        </button>
+                        <% } %>
+                    </div>
+                    
+                    <div class="bio-edit" id="bio-edit" style="display: none;">
+                        <textarea id="bio-input" rows="4" placeholder="Tell us about yourself..."><%= user.bio || '' %></textarea>
+                        <div class="bio-edit-actions">
+                            <button class="btn btn-secondary cancel-edit" data-section="bio">Cancel</button>
+                            <button class="btn btn-primary save-edit" data-section="bio" data-field="bio">Save</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Unified Content Container -->
+                <div class="unified-content-container">
+                    <!-- Experience List -->
+                    <div class="experience-list" id="experience-list">
+                        <!-- Experience items will be loaded here -->
+                        <div class="empty-state" id="experience-empty-state">
+                            <i class="fas fa-briefcase"></i>
+                            <p>No experience added yet</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Posts Container -->
+                    <div class="posts-container" id="posts-container">
+                        <!-- Posts will be loaded here via JavaScript -->
+                        <div class="empty-state" id="posts-empty-state">
+                            <i class="fas fa-file-alt"></i>
+                            <p>No posts yet</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Media Grid -->
+                    <div class="media-grid" id="media-grid">
+                        <!-- Media items will be loaded here -->
+                        <div class="empty-state" id="media-empty-state">
+                            <i class="fas fa-images"></i>
+                            <p>No media uploaded yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="profile-edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit-name">Name</label>
+                    <input type="text" id="edit-name" value="<%= user.name || '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="edit-title">Profile Title</label>
+                    <select id="edit-title" class="dropdown-select">
+                        <option value="" <%= !user.title ? 'selected' : '' %>>Select a title</option>
+                        <option value="Founder" <%= user.title === 'Founder' ? 'selected' : '' %>>Founder</option>
+                        <option value="Co-founder" <%= user.title === 'Co-founder' ? 'selected' : '' %>>Co-founder</option>
+                        <option value="Student" <%= user.title === 'Student' ? 'selected' : '' %>>Student</option>
+                        <option value="Investor" <%= user.title === 'Investor' ? 'selected' : '' %>>Investor</option>
+                        <option value="Manufacturer" <%= user.title === 'Manufacturer' ? 'selected' : '' %>>Manufacturer</option>
+                        <option value="Vendor" <%= user.title === 'Vendor' ? 'selected' : '' %>>Vendor</option>
+                        <option value="Intern" <%= user.title === 'Intern' ? 'selected' : '' %>>Intern</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-location">Location</label>
+                    <input type="text" id="edit-location" value="<%= user.location || '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="edit-website">Website</label>
+                    <input type="text" id="edit-website" value="<%= user.website || '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="edit-bio">Bio</label>
+                    <textarea id="edit-bio"><%= user.bio || '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-skills">Skills (comma separated)</label>
+                    <input type="text" id="edit-skills" value="<%= user.skills ? user.skills.join(', ') : '' %>">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-profile-edit">Cancel</button>
+                <button class="btn btn-primary" id="save-profile-edit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Lightbox Modal -->
+    <div class="modal" id="media-lightbox-modal">
+        <div class="modal-content lightbox-content">
+            <button class="close-modal">&times;</button>
+            <div class="lightbox-container">
+                <img id="lightbox-image" src="" alt="Media preview">
+                <video id="lightbox-video" controls style="display: none;"></video>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Store current user ID for JavaScript access
+        const currentUserId = '<%= currentUser?._id %>';
+        // Enable Zilliz integration
+        const useZilliz = true;
+    </script>
+    <script src="/js/modern-profile.js"></script>
+    <script src="/js/modern-profile-zilliz.js"></script>
+    <script src="/js/notification.js"></script>
+    <script src="/js/connection.js"></script>
+    <script src="/js/new-ai-chat.js"></script>
+    <!-- Include the experience.js script at the bottom of the file, before the closing body tag -->
+    <script src="/js/experience.js"></script>
+</body>
+</html>

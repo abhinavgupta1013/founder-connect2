@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - Founder Connect</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        
+        .post-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+            padding: 30px;
+        }
+        
+        .post-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 1rem;
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .media-upload-container {
+            border: 2px dashed #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .media-upload-container:hover {
+            border-color: #1E88E5;
+            background-color: rgba(30, 136, 229, 0.05);
+        }
+        
+        .media-upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .media-upload-icon {
+            font-size: 2rem;
+            color: #1E88E5;
+        }
+        
+        .media-upload-text {
+            font-size: 1rem;
+            color: #4a5568;
+        }
+        
+        .media-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .preview-item {
+            position: relative;
+            width: calc(33.333% - 10px);
+            padding-top: calc(33.333% - 10px);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+        
+        .preview-item img, .preview-item video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-media {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #1E88E5;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1976D2;
+        }
+        
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #718096;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        
+        .nav-item:hover {
+            color: #1E88E5;
+            background-color: rgba(30, 136, 229, 0.05);
+        }
+        
+        .nav-item.active {
+            color: #1E88E5;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(30, 136, 229, 0.2);
+            border-radius: 50%;
+            border-top-color: #1E88E5;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .preview-item {
+                width: calc(50% - 10px);
+                padding-top: calc(50% - 10px);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .preview-item {
+                width: 100%;
+                padding-top: 100%;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <header>
+                        <h1>
+    Founder Connect
+</h1>
+            <h2>Create Post</h2>
+        </header>
+        
+        <div class="post-card">
+            <form id="post-form" class="post-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="post-caption" class="form-label">What's on your mind?</label>
+                    <textarea id="post-caption" name="caption" class="form-control" placeholder="Share your thoughts, ideas, or updates..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Add Photos/Videos</label>
+                    <div class="media-upload-container" id="media-upload-container">
+                        <label for="post-media" class="media-upload-label">
+                            <i class="fas fa-cloud-upload-alt media-upload-icon"></i>
+                            <span class="media-upload-text">Click to upload or drag files here</span>
+                        </label>
+                        <input type="file" id="post-media" name="media" accept="image/*,video/*" multiple style="display: none;">
+                    </div>
+                    
+                    <div id="media-preview" class="media-preview"></div>
+                </div>
+                
+                <div class="buttons">
+                    <a href="/profile" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="/" class="nav-item">
+            <i class="fas fa-home nav-icon"></i>
+            <span>Home</span>
+        </a>
+        <a href="/explore" class="nav-item">
+            <i class="fas fa-compass nav-icon"></i>
+            <span>Explore</span>
+        </a>
+        <a href="/create-post" class="nav-item active">
+            <i class="fas fa-plus-circle nav-icon"></i>
+            <span>Post</span>
+        </a>
+        <a href="/notifications" class="nav-item">
+            <i class="fas fa-bell nav-icon"></i>
+            <span>Alerts</span>
+        </a>
+        <a href="/profile" class="nav-item">
+            <i class="fas fa-user nav-icon"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading animation when page is loaded
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+            
+            const postForm = document.getElementById('post-form');
+            const mediaInput = document.getElementById('post-media');
+            const mediaPreview = document.getElementById('media-preview');
+            const mediaUploadContainer = document.getElementById('media-upload-container');
+            
+            // Handle file selection
+            mediaInput.addEventListener('change', function(e) {
+                handleFileSelect(e.target.files);
+            });
+            
+            // Handle drag and drop
+            mediaUploadContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                mediaUploadContainer.style.borderColor = '#1E88E5';
+                mediaUploadContainer.style.backgroundColor = 'rgba(30, 136, 229, 0.1)';
+            });
+            
+            mediaUploadContainer.addEventListener('dragleave', function() {
+                mediaUploadContainer.style.borderColor = '#e2e8f0';
+                mediaUploadContainer.style.backgroundColor = '';
+            });
+            
+            mediaUploadContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                mediaUploadContainer.style.borderColor = '#e2e8f0';
+                mediaUploadContainer.style.backgroundColor = '';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileSelect(e.dataTransfer.files);
+                }
+            });
+            
+            // Handle form submission
+            postForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const caption = document.getElementById('post-caption').value;
+                const files = mediaInput.files;
+                
+                // Validate that either caption or media is provided
+                if (!caption && files.length === 0) {
+                    alert('Please add a caption or upload media to create a post');
+                    return;
+                }
+                
+                // Show loading animation
+                loadingElement.style.display = 'flex';
+                
+                // Create FormData object to send files
+                const formData = new FormData();
+                formData.append('caption', caption);
+                
+                // Add all selected files
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('media', files[i]);
+                }
+                
+                try {
+                    // Send post data to server
+                    const response = await fetch('/api/posts', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        // Redirect to profile page on success
+                        window.location.href = '/profile';
+                    } else {
+                        // Show error message
+                        alert(result.error || 'Failed to create post');
+                        loadingElement.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error creating post:', error);
+                    alert('An error occurred while creating your post');
+                    loadingElement.style.display = 'none';
+                }
+            });
+            
+            // Function to handle file selection
+            function handleFileSelect(files) {
+                // Clear preview if too many files
+                if (files.length > 10) {
+                    alert('You can upload a maximum of 10 files');
+                    mediaInput.value = '';
+                    return;
+                }
+                
+                // Clear previous previews
+                mediaPreview.innerHTML = '';
+                
+                // Create preview for each file
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    // Validate file size (10MB max)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+                        continue;
+                    }
+                    
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.dataset.index = i;
+                        
+                        // Create remove button
+                        const removeBtn = document.createElement('div');
+                        removeBtn.className = 'remove-media';
+                        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        removeBtn.addEventListener('click', function() {
+                            // Remove this preview item
+                            previewItem.remove();
+                            
+                            // If no previews left, clear the file input
+                            if (mediaPreview.children.length === 0) {
+                                mediaInput.value = '';
+                            }
+                        });
+                        
+                        // Create preview element based on file type
+                        if (file.type.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = file.name;
+                            previewItem.appendChild(img);
+                        } else if (file.type.startsWith('video/')) {
+                            const video = document.createElement('video');
+                            video.src = e.target.result;
+                            video.controls = true;
+                            previewItem.appendChild(video);
+                        }
+                        
+                        previewItem.appendChild(removeBtn);
+                        mediaPreview.appendChild(previewItem);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

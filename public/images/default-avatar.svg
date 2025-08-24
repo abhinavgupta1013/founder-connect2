@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="#e0e7ff" />
+  
+  <!-- Person silhouette -->
+  <path d="M100 110c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40-17.9 40-40 40z" fill="#4f46e5" opacity="0.2" />
+  <path d="M160 170c0-33.1-26.9-60-60-60s-60 26.9-60 60" fill="#4f46e5" opacity="0.2" />
+  
+  <!-- Head -->
+  <circle cx="100" cy="70" r="30" fill="#4f46e5" opacity="0.4" />
+  
+  <!-- Body -->
+  <path d="M100 100c-16.6 0-30 13.4-30 30v40h60v-40c0-16.6-13.4-30-30-30z" fill="#4f46e5" opacity="0.4" />
+</svg>

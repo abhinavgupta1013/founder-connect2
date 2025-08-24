@@ -1,0 +1,253 @@
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const nodemailer = require('nodemailer');
+const session = require('express-session');
+const path = require('path');
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+
+const app = express();
+const http = require('http').createServer(app);
+const PORT = process.env.PORT || 3001;
+
+// Socket.IO setup
+const io = require('socket.io')(http, {
+    cors: {
+        origin: process.env.CLIENT_URL || "http://localhost:3001",
+        methods: ["GET", "POST"]
+    }
+});
+app.set('socketio', io);
+
+// Middleware
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json());
+app.use(express.static('public'));
+
+// Set up EJS as the view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Create a session middleware instance with the same settings as the Express app
+const sessionMiddleware = session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 }
+});
+
+// Use the same session middleware for Express
+app.use(sessionMiddleware);
+
+// Socket.IO middleware for authentication
+io.use((socket, next) => {
+    // Apply the session middleware to the socket request
+    sessionMiddleware(socket.request, {}, () => {
+        if (socket.request.session && socket.request.session.userId) {
+            // Set the user ID in the socket request
+            socket.request.user = { _id: socket.request.session.userId };
+            console.log('Socket authenticated for user:', socket.request.session.userId);
+            next();
+        } else {
+            console.log('Socket authentication failed - no session or userId');
+            next(new Error('Authentication error'));
+        }
+    });
+});
+
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+    console.log('User connected to socket:', socket.id);
+    
+    // If user is authenticated, join them to their personal room
+    if (socket.request.user && socket.request.user._id) {
+        const userId = socket.request.user._id;
+        socket.join(userId); // Use userId directly as the room name for simplicity
+        console.log(`User ${userId} joined their room`);
+    }
+    
+    // Handle manual user registration (for cases where session auth might not work)
+    socket.on('registerUser', (userId) => {
+        if (userId) {
+            socket.join(userId);
+            console.log(`User ${userId} manually registered and joined room`);
+        }
+    });
+    
+    // Handle connection updates
+    socket.on('connection_update', (data) => {
+        if (data.targetUserId) {
+            // Forward the connection update to the target user
+            io.to(data.targetUserId).emit('connection_update', {
+                type: data.type,
+                fromUserId: data.fromUserId,
+                connectionCount: data.connectionCount
+            });
+        }
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+});
+
+// Import Authentication Middleware
+const { authenticateUser, protectRoute, redirectIfAuthenticated } = require('./middleware/authMiddleware');
+
+// Import Auth Routes
+const authRoutes = require('./routes/authRoutes');
+
+// Zilliz Connection
+const { MilvusClient } = require('@zilliz/milvus2-sdk-node');
+
+// Create Milvus client with token-based authentication for Zilliz Cloud
+const milvusClient = new MilvusClient({
+  address: `${process.env.ZILLIZ_HOST}:${process.env.ZILLIZ_PORT}`,
+  token: process.env.ZILLIZ_PASSWORD,
+  ssl: true,
+  timeout: 60000
+});
+
+// Test Zilliz connection
+console.log(`Attempting to connect to Zilliz at: ${process.env.ZILLIZ_HOST}:${process.env.ZILLIZ_PORT}`);
+
+milvusClient.listCollections()
+  .then(collections => {
+    console.log('Connected to Zilliz successfully');
+    console.log('Available collections:', collections);
+  })
+  .catch(err => {
+    console.error('Zilliz connection error:', err);
+    console.log('Please check that your Zilliz credentials are correct');
+  });
+
+// Keep MongoDB connection for backward compatibility during migration
+// This can be removed once migration to Zilliz is complete
+if (process.env.MONGODB_URI) {
+  console.log('Maintaining MongoDB connection for backward compatibility');
+  mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 10000
+  }).catch(err => console.error('MongoDB fallback connection error:', err));
+}
+
+// Nodemailer Configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
+  },
+  logger: true,
+  debug: true
+});
+
+// Import User Model
+const User = require('./models/User');
+
+// Import Routes
+const postRoutes = require('./routes/postRoutes');
+const postRoutesV2 = require('./routes/postRoutesV2');
+const apiRoutes = require('./routes/api');
+const socialRoutes = require('./routes/socialRoutes');
+const userRoutes = require('./routes/userRoutes');
+const profileReactRoutes = require('./routes/profile-react-routes');
+const messagesRoutes = require('./routes/messages');
+const aiChatRoutes = require('./routes/aiChatRoutes');
+
+// Import Zilliz Routes
+const postRoutesZilliz = require('./routes/post-routes-zilliz');
+const mediaRoutesZilliz = require('./routes/media-routes-zilliz');
+
+// Set up multer for file uploads
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads/avatars')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'avatar-' + uniqueSuffix + ext);
+  }
+});
+const upload = multer({ storage: storage });
+
+// Use Auth Routes
+app.use('/api/auth', authRoutes);
+app.use('/', authRoutes);
+
+// Use Post Routes
+app.use('/api/posts', postRoutes);
+app.use('/api/v2/posts', postRoutesV2);
+
+// Use Zilliz Routes
+app.use('/api/zilliz/posts', postRoutesZilliz);
+app.use('/api/zilliz/media', mediaRoutesZilliz);
+
+// Use User Routes
+app.use('/api/users', userRoutes);
+
+// Use Profile React Routes
+app.use('/', profileReactRoutes);
+
+// Use Social Routes
+app.use('/api/social', socialRoutes);
+
+// Use API Routes
+app.use('/api', apiRoutes);
+
+// Use AI Chat Routes
+app.use('/api/ai-chat', aiChatRoutes);
+
+// Modern Profile Page Route
+app.get('/modern-profile', protectRoute, async (req, res) => {
+  try {
+    res.render('modern-profile', { user: req.user, currentUser: req.user });
+  } catch (error) {
+    console.error('Error rendering modern profile:', error);
+    res.redirect('/error');
+  }
+});
+
+// Modern Profile with Zilliz Page Route
+app.get('/modern-profile-zilliz', protectRoute, async (req, res) => {
+  try {
+    res.render('modern-profile-zilliz', { user: req.user, currentUser: req.user });
+  } catch (error) {
+    console.error('Error rendering modern profile with Zilliz:', error);
+    res.redirect('/error');
+  }
+});
+
+// Profile Redesign Page Route
+app.get('/profile-redesign', protectRoute, async (req, res) => {
+  try {
+    // Redirect to modern profile page instead
+    res.redirect('/modern-profile');
+  } catch (error) {
+    console.error('Error rendering profile redesign:', error);
+    res.redirect('/error');
+  }
+});
+
+// Define additional API routes
+app.use('/api/connections', require('./routes/api/connections'));
+app.use('/api/connections', require('./routes/api/connections-status'));
+// Messages API routes removed
+app.use('/api/analytics', require('./routes/api/analytics'));
+app.use('/api/media', require('./routes/api/media'));
+
+// Start the server
+http.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`You can also access it at http://127.0.0.1:${PORT}`);
+  console.log('Zilliz integration is enabled at /api/zilliz/posts and /api/zilliz/media');
+});

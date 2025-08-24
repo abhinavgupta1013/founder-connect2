@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Founder Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/new-ai-chat.css">
+    <link rel="stylesheet" href="/css/web-search-modal.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="/images/founder-connect-icon.svg" alt="Founder Connect" class="logo">
+            <h2>AI Assistant</h2>
+        </div>
+        
+        <div class="sidebar-content">
+            <button id="new-chat-btn" class="new-chat-button">
+                <i class="fas fa-plus"></i> New Chat
+            </button>
+            <a href="/investor-outreach" class="btn btn-success" style="margin-top: 15px; width: 100%; display: block; font-weight: bold;">
+                <i class="fas fa-envelope"></i> Investor Outreach
+            </a>
+            <div class="chat-history">
+                <h3>Recent Chats</h3>
+                <ul id="chat-history-list">
+                    <!-- Chat history will be populated here -->
+                </ul>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="clear-all-chats-btn" class="clear-all-button">
+                <i class="fas fa-trash"></i> Clear All Chats
+            </button>
+            <a href="/" class="home-button">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Chat Area -->
+    <div class="main-chat">
+        <div class="chat-header">
+            <div class="current-chat-info">
+                <h2 id="current-chat-title">New Chat</h2>
+            </div>
+            <div class="chat-actions">
+                <button id="export-chat-btn" title="Export Chat">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button id="clear-chat-btn" title="Clear Current Chat">
+                    <i class="fas fa-eraser"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="chat-messages" class="chat-messages">
+            <!-- Welcome message -->
+            <div class="message ai-message">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-text">
+                        <p>Hello! I'm your AI assistant. How can I help you today?</p>
+                        <p>You can ask me questions, request content generation, or use special commands:</p>
+                        <ul class="command-list">
+                            <li><code>@generate bio about [theme]</code> - Create a professional bio</li>
+                            <li><code>@create post about [topic]</code> - Generate a social media post</li>
+                            <li><code>@find [expertise/industry]</code> - Search for relevant profiles</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <div id="input-attachments" class="input-attachments"></div>
+            <div class="input-row">
+                <label for="image-upload" class="attachment-button" title="Attach Image">
+                    <i class="fas fa-image"></i>
+                </label>
+                <input type="file" id="image-upload" accept="image/*" multiple style="display: none;">
+                
+                <div class="input-wrapper">
+                    <textarea id="chat-input" placeholder="Type a message or use @commands..."></textarea>
+                    <div class="input-actions">
+                        <button id="voice-input-btn" title="Voice Input">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button id="draft-message-btn" title="Draft Message with AI">
+                    <i class="fas fa-magic"></i>
+                </button>
+                <button id="send-message-btn" title="Send Message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Command Suggestions Popup -->
+<div id="command-suggestions" class="command-suggestions">
+    <div class="suggestions-header">
+        <h3>Command Suggestions</h3>
+        <button id="close-suggestions"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="suggestions-content">
+        <div class="command-group">
+            <h4>Content Creation</h4>
+            <div class="command-item" data-command="@generate bio about">@generate bio about [theme]</div>
+            <div class="command-item" data-command="@create post about">@create post about [topic]</div>
+            <div class="command-item" data-command="@update my bio with">@update my bio with [text]</div>
+        </div>
+        <div class="command-group">
+            <h4>Networking</h4>
+            <div class="command-item" data-command="@find">@find [expertise/industry]</div>
+            <div class="command-item" data-command="@connect with">@connect with [name/username]</div>
+            <div class="command-item" data-command="@send a message to">@send a message to [name] saying [message]</div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div id="image-modal" class="image-modal">
+    <span class="close-modal">&times;</span>
+    <img id="modal-image" class="modal-content">
+</div>
+
+<!-- Loading Indicator -->
+<div id="loading-indicator" class="loading-indicator">
+    <div class="spinner"></div>
+    <p>Processing your request...</p>
+</div>
+
+<!-- Web Search Modal -->
+<div id="web-search-modal" class="web-search-modal">
+    <div class="web-search-container">
+        <div class="web-search-header">
+            <h2>Business Research Assistant</h2>
+            <p>Ask any business question and get expert recommendations based on web research</p>
+            <button id="close-web-search" class="close-web-search">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="web-search-form">
+            <input type="text" id="web-search-input" class="web-search-input" placeholder="e.g., Find investors for AI startups">
+            <button id="web-search-button" class="web-search-button">Search</button>
+        </div>
+        
+        <div class="example-queries">
+            <h3>Try these example queries:</h3>
+            <ul>
+                <li class="example-query">Find investors for AI startups</li>
+                <li class="example-query">What are the latest trends in fintech?</li>
+                <li class="example-query">How to approach venture capital firms</li>
+                <li class="example-query">List of top accelerators for SaaS companies</li>
+                <li class="example-query">Market analysis for blockchain technology</li>
+            </ul>
+        </div>
+        
+        <div class="web-search-loading">
+            <div class="web-search-spinner"></div>
+            <p>Researching the web for the best recommendations...</p>
+            <p><small>This may take up to 30 seconds</small></p>
+        </div>
+        
+        <div id="web-search-results" class="web-search-results"></div>
+        
+        <div class="web-search-footer">
+            <button id="use-results-btn" class="use-results-btn">Use Results in Chat</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/new-ai-chat.js"></script>
+</body>
+</html>

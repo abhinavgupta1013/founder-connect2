@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - Founder Connect</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/explore-page-redesign.css">
+    <link rel="stylesheet" href="/css/concept-explore.css">
+    <link rel="stylesheet" href="/css/explore-modal-enhanced.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">Founder Connect</div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/explore" class="nav-link">
+                        <i class="fas fa-compass nav-icon"></i>
+                        Explore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/notifications" class="nav-link">
+                        <i class="fas fa-bell nav-icon"></i>
+                        Notifications
+                        <% if (user && user.unreadNotifications && user.unreadNotifications > 0) { %>
+                        <div class="notification-count"><%= user.unreadNotifications %></div>
+                        <% } %>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/messages" class="nav-link">
+                        <i class="fas fa-envelope nav-icon"></i>
+                        Messages
+                        <% if (user && user.unreadMessages && user.unreadMessages > 0) { %>
+                        <div class="notification-count"><%= user.unreadMessages %></div>
+                        <% } %>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/modern-profile" class="nav-link">
+                        <i class="fas fa-user nav-icon"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-section-title">DISCOVER</div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/founders" class="nav-link">
+                        <i class="fas fa-users nav-icon"></i>
+                        Founders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/investors" class="nav-link">
+                        <i class="fas fa-briefcase nav-icon"></i>
+                        Investors
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/manufacturers" class="nav-link">
+                        <i class="fas fa-industry nav-icon"></i>
+                        Manufacturers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/interns" class="nav-link">
+                        <i class="fas fa-graduation-cap nav-icon"></i>
+                        Interns
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                <div class="user-avatar"><%= user && user.name ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+                <div class="user-info">
+                    <div class="user-name"><%= user ? user.name : 'Guest User' %></div>
+                    <div class="user-role"><%= user ? user.role || 'Member' : 'Not logged in' %></div>
+                </div>
+            </div>
+        </div>
+        </div>
+    
+        <!-- Content Area -->
+        <div class="content">
+            <!-- Navigation Bar -->
+            <nav class="explore-nav">
+                <div class="explore-nav-search">
+                    <input type="text" placeholder="" id="search-input">
+                    <i class="fas fa-search"></i>
+                    <div class="search-results-container" id="explore-search-results"></div>
+                </div>
+                
+                <div class="explore-nav-actions">
+                    <div class="explore-nav-icon">
+                        <i class="fas fa-bell"></i>
+                        <% if (user && user.unreadNotifications && user.unreadNotifications > 0) { %>
+                        <div class="notification-badge"></div>
+                        <% } %>
+                    </div>
+                    
+                    <div class="explore-nav-icon">
+                        <i class="fas fa-envelope"></i>
+                        <% if (user && user.unreadMessages && user.unreadMessages > 0) { %>
+                        <div class="notification-badge"></div>
+                        <% } %>
+                    </div>
+                    
+                    <div class="explore-nav-profile">
+                        <div class="avatar-container">
+                            <div class="avatar">
+                                <% if (user && user.avatar) { %>
+                                <img src="<%= user.avatar %>" alt="<%= user.name %>">
+                                <% } else { %>
+                                <div class="avatar-placeholder">
+                                    <%= user && user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+                                </div>
+                                <% } %>
+                                <% if (user) { %>
+                                <div class="avatar-options">
+                                    <div class="avatar-option upload-photo">
+                                        <i class="fas fa-camera"></i> Upload Photo
+                                    </div>
+                                    <div class="avatar-option remove-photo">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </div>
+                                </div>
+                                <div class="avatar-edit">
+                                    <label for="nav-avatar-input">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input type="file" id="nav-avatar-input" class="avatar-input" accept="image/*">
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            
+            
+            <!-- Category Tabs -->
+            <div class="concept-categories">
+                <div class="category-item active" data-filter="all">All</div>
+                <div class="category-item" data-filter="trending">Trending</div>
+                <div class="category-item" data-filter="gaming">Gaming</div>
+                <div class="category-item" data-filter="art">Art</div>
+                <div class="category-item" data-filter="travel">Travel</div>
+                <div class="category-item" data-filter="food">Food</div>
+                <div class="category-item" data-filter="nature">Nature</div>
+                <div class="category-item" data-filter="music">Music</div>
+                <div class="category-item" data-filter="tech">Tech</div>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <div id="concept-loading" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+            </div>
+            
+            <!-- Explore Grid -->
+            <div class="concept-grid" id="concept-grid">
+                <!-- Posts will be loaded dynamically via JavaScript -->
+            </div>
+        </div>
+    
+        <!-- Mobile Navigation -->
+        <div class="explore-mobile-nav">
+            <div class="explore-mobile-nav-items">
+                <a href="/" class="explore-mobile-nav-item">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="/explore" class="explore-mobile-nav-item">
+                    <i class="fas fa-compass"></i>
+                </a>
+                <a href="/concept-explore" class="explore-mobile-nav-item active">
+                    <i class="fas fa-th"></i>
+                </a>
+                <a href="#" class="explore-mobile-nav-item">
+                    <i class="fas fa-plus-square"></i>
+                </a>
+                <a href="/notifications" class="explore-mobile-nav-item">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="/modern-profile" class="explore-mobile-nav-item">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Post Modal (Reusing existing modal) -->
+    <div id="explore-modal" class="explore-modal" style="display: none;">
+    <div class="explore-modal-content">
+        <button class="explore-modal-close" aria-label="Close modal">&times;</button>
+        <div class="explore-modal-media">
+            <button class="explore-modal-nav-arrow explore-modal-prev-arrow" aria-label="Previous post">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="explore-modal-nav-arrow explore-modal-next-arrow" aria-label="Next post">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+            <div class="explore-modal-details">
+                <div class="explore-modal-header">
+                    <div class="explore-modal-user">
+                        <div class="explore-modal-avatar"></div>
+                        <div class="explore-modal-user-info">
+                            <div class="explore-modal-username"></div>
+                            <div class="explore-modal-location"></div>
+                        </div>
+                    </div>
+                    <button class="explore-modal-follow-btn">Follow</button>
+                </div>
+                <div class="explore-modal-caption"></div>
+                <div class="explore-modal-comments"></div>
+                <div class="explore-modal-actions">
+                    <button class="explore-modal-action-button heart">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <button class="explore-modal-action-button">
+                        <i class="far fa-comment"></i>
+                    </button>
+                    <button class="explore-modal-action-button">
+                        <i class="far fa-paper-plane"></i>
+                    </button>
+                    <button class="explore-modal-action-button">
+                        <i class="far fa-bookmark"></i>
+                    </button>
+                </div>
+                <div class="explore-modal-likes"></div>
+                <div class="explore-modal-time"></div>
+                <div class="explore-modal-add-comment">
+                    <input type="text" placeholder="Add a comment...">
+                    <button>Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="/js/concept-explore.js"></script>
+    <script src="/js/explore-modal-enhanced.js"></script>
+    <script src="/js/user-search.js"></script>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Founder Connect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            height: 100vh;
+            background: #F5F7FA;
+            color: #262626;
+            line-height: 1.6;
+        }
+        
+        .auth-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .brand-panel {
+            display: none;
+            background-color: #0095F6;
+            background-image: linear-gradient(135deg, #0095F6, #0076C3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .brand-content {
+            position: relative;
+            z-index: 2;
+            padding: 3rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+        }
+        
+        .brand-headline {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .brand-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 80%;
+        }
+        
+        .auth-form-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .auth-form-wrapper {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+            border-radius: 50%;
+            background-color: #0095F6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .auth-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 16px;
+            color: #8E8E8E;
+        }
+        
+        .auth-error-message {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: rgba(237, 73, 86, 0.1);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #ED4956;
+        }
+        
+        .error-icon {
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .auth-form {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #262626;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8E8E8E;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #DBDBDB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #0095F6;
+            box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+        }
+        
+        .password-input-wrapper {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #8E8E8E;
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            height: 4px;
+            background-color: #DBDBDB;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .password-strength-meter {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .password-feedback {
+            margin-top: 0.5rem;
+            font-size: 12px;
+            color: #8E8E8E;
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #0095F6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-button:hover {
+            background-color: #0076C3;
+        }
+        
+        .auth-button .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        .auth-button.loading .spinner {
+            display: inline-block;
+        }
+        
+        .auth-button.loading .button-text {
+            display: none;
+        }
+        
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: #8E8E8E;
+            font-size: 14px;
+        }
+        
+        .auth-divider::before,
+        .auth-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #DBDBDB;
+        }
+        
+        .auth-divider::before {
+            margin-right: 1rem;
+        }
+        
+        .auth-divider::after {
+            margin-left: 1rem;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #8E8E8E;
+        }
+        
+        .auth-footer a {
+            color: #0095F6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive Styles */
+        @media (min-width: 1024px) {
+            .brand-panel {
+                display: block;
+                width: 60%;
+            }
+            
+            .auth-form-container {
+                width: 40%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .auth-form-wrapper {
+                padding: 2rem;
+            }
+        }
+    </style>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Brand Panel (visible on desktop) -->
+        <div class="brand-panel">
+            <div class="brand-content">
+                <div class="auth-logo">F</div>
+                <h1 class="brand-headline">Join the network that powers innovation</h1>
+                <p class="brand-description">Connect with founders, investors, and professionals building the future of business and technology.</p>
+            </div>
+        </div>
+        
+        <!-- Auth Form Container -->
+        <div class="auth-form-container">
+            <div class="auth-form-wrapper">
+                <div class="auth-header">
+                    <div class="auth-logo">F</div>
+                    <h1 class="auth-title">Create your account</h1>
+                    <p class="auth-subtitle">Start your founder journey today</p>
+                </div>
+                
+                <!-- Dedicated error message area -->
+                <div id="form-error-area" style="margin-bottom: 1.5rem;">
+                    <% if (locals.errors && typeof errors !== 'undefined' && errors.length > 0) { %>
+                        <div class="auth-error-message">
+                            <svg class="error-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM11 15H9V13H11V15ZM11 11H9V5H11V11Z" fill="#ED4956"/>
+                            </svg>
+                            <span><%= errors %></span>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <form id="signup-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                placeholder="Your full name" 
+                                value="<%= locals.name || '' %>" 
+                                required 
+                                class="form-input"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="you@example.com" 
+                                value="<%= locals.email || '' %>" 
+                                required 
+                                class="form-input"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper password-input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Create a strong password" 
+                                required 
+                                class="form-input"
+                            >
+                            <button type="button" class="password-toggle" id="password-toggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-meter" id="password-strength-meter"></div>
+                        </div>
+                        <div class="password-feedback" id="password-feedback">Password must be at least 8 characters</div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="signup-button">
+                        <span class="spinner"></span>
+                        <span class="button-text">Create Account</span>
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    Already have an account? <a href="/login">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to display error messages
+        function showError(message) {
+            const errorArea = document.getElementById('form-error-area');
+            if (!errorArea) {
+                console.error("Error display area (#form-error-area) not found.");
+                return; 
+            }
+
+            // Clear previous error message(s) within the dedicated area
+            errorArea.innerHTML = ''; 
+
+            // Create new error message element
+            const errorContainer = document.createElement('div');
+            errorContainer.className = 'auth-error-message'; // Use existing styling
+            errorContainer.innerHTML = `
+                <svg class="error-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM11 15H9V13H11V15ZM11 11H9V5H11V11Z" fill="#ED4956"/>
+                </svg>
+                <span>${message}</span>
+            `;
+            
+            // Append the new error message to the dedicated area
+            errorArea.appendChild(errorContainer);
+        }
+
+        // Password visibility toggle
+        document.getElementById('password-toggle').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // Password strength meter
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthMeter = document.getElementById('password-strength-meter');
+            const feedback = document.getElementById('password-feedback');
+            
+            // Calculate strength
+            let strength = 0;
+            let feedback_text = '';
+            
+            if (password.length >= 8) {
+                strength += 25;
+                feedback_text = 'Good length';
+            } else {
+                feedback_text = 'Password must be at least 8 characters';
+            }
+            
+            if (password.match(/[A-Z]/)) {
+                strength += 25;
+                feedback_text = 'Good, includes uppercase';
+            }
+            
+            if (password.match(/[0-9]/)) {
+                strength += 25;
+                feedback_text = 'Good, includes numbers';
+            }
+            
+            if (password.match(/[^A-Za-z0-9]/)) {
+                strength += 25;
+                feedback_text = 'Strong password';
+            }
+            
+            // Update UI
+            strengthMeter.style.width = strength + '%';
+            
+            // Update color based on strength
+            if (strength < 25) {
+                strengthMeter.style.backgroundColor = '#ED4956'; // Red
+            } else if (strength < 50) {
+                strengthMeter.style.backgroundColor = '#FFAA00'; // Orange
+            } else if (strength < 75) {
+                strengthMeter.style.backgroundColor = '#FFD600'; // Yellow
+            } else {
+                strengthMeter.style.backgroundColor = '#00C853'; // Green
+                feedback_text = 'Strong password';
+            }
+            
+            feedback.textContent = feedback_text;
+        });
+
+        // Form submission
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const signupButton = document.getElementById('signup-button');
+            
+            // Show loading state and disable button
+            signupButton.classList.add('loading');
+            signupButton.disabled = true;
+            
+            // showError will handle clearing the dedicated error area.
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                const data = await response.json();
+                
+                // showError will handle clearing the dedicated error area before displaying a new one.
+
+                if (response.ok && data.success) {
+                    // Store email in session storage for OTP page, using email from response
+                    if (data.email) {
+                        sessionStorage.setItem('email', data.email);
+                    }
+                    
+                    // Redirect to OTP verification page or as directed by server
+                    window.location.href = data.redirectTo || '/'; 
+                } else {
+                    // Show error message using the showError function
+                    showError(data.error || data.message || 'An error occurred. Please try again.');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showError('An error occurred. Please try again later.');
+            } finally {
+                // Hide loading state and re-enable button
+                signupButton.classList.remove('loading');
+                signupButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Founder Connect</title>
+    <link rel="stylesheet" href="/css/common-layout.css">
+    <link rel="stylesheet" href="/css/messages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">Founder Connect</div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/explore" class="nav-link">
+                        <i class="fas fa-compass nav-icon"></i>
+                        Explore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/notifications" class="nav-link">
+                        <i class="fas fa-bell nav-icon"></i>
+                        Notifications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/messages" class="nav-link active" id="messages-nav">
+                        <i class="fas fa-envelope nav-icon"></i>
+                        Messages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/modern-profile" class="nav-link">
+                        <i class="fas fa-user nav-icon"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-section-title">DISCOVER</div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/founders" class="nav-link">
+                        <i class="fas fa-users nav-icon"></i>
+                        Founders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/investors" class="nav-link">
+                        <i class="fas fa-briefcase nav-icon"></i>
+                        Investors
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/manufacturers" class="nav-link">
+                        <i class="fas fa-industry nav-icon"></i>
+                        Manufacturers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/interns" class="nav-link">
+                        <i class="fas fa-graduation-cap nav-icon"></i>
+                        Interns
+                    </a>
+                </li>
+
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar"><%= user && user.name ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+                    <div class="user-info">
+                        <div class="user-name"><%= user ? user.name : 'Guest User' %></div>
+                        <div class="user-role"><%= user ? user.role || 'Member' : 'Not logged in' %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="content">
+            <!-- Conversations List -->
+            <div class="conversations-list">
+                <div class="messages-header">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <%= user && user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+                        </div>
+                        <div class="user-name"><%= user ? user.name : 'Guest User' %></div>
+                    </div>
+                    <div class="header-actions">
+                        <a href="/ai/chat/new" class="new-message-btn" title="Chat with AI Assistant">
+                            <i class="fas fa-robot"></i>
+                        </a>
+                        <button class="new-message-btn">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-conversations">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search messages" id="search-messages">
+                </div>
+
+                <div class="conversations" id="conversations-list">
+                    <!-- Conversations will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area" id="chat-area">
+                <div class="no-chat-selected">
+                    <div class="no-chat-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Your Messages</h3>
+                    <p>Send private messages to a friend or group</p>
+                    <button class="send-message-btn">Send Message</button>
+                </div>
+            </div>
+
+            <!-- New Message Modal -->
+            <div class="modal" id="new-message-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>New Message</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="search-users">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search users" id="search-users">
+                        </div>
+                        <div class="users-list" id="users-list">
+                            <!-- Users will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Pass user data from server to client
+        const currentUserId = "<%= user._id %>";
+    </script>
+    <script src="/js/messages.js"></script>
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <ul class="mobile-nav-menu">
+            <li class="mobile-nav-item">
+                <a href="/" class="mobile-nav-link">
+                    <i class="fas fa-home mobile-nav-icon"></i>
+                    Home
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/explore" class="mobile-nav-link">
+                    <i class="fas fa-compass mobile-nav-icon"></i>
+                    Explore
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/notifications" class="mobile-nav-link">
+                    <i class="fas fa-bell mobile-nav-icon"></i>
+                    Notifications
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/messages" class="mobile-nav-link active">
+                    <i class="fas fa-envelope mobile-nav-icon"></i>
+                    Messages
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/modern-profile" class="mobile-nav-link">
+                    <i class="fas fa-user mobile-nav-icon"></i>
+                    Profile
+                </a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

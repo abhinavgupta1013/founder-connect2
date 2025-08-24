@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification - Founder Connect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            height: 100vh;
+            background: #F5F7FA;
+            color: #262626;
+            line-height: 1.6;
+        }
+        
+        .auth-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .brand-panel {
+            display: none;
+            background-color: #0095F6;
+            background-image: linear-gradient(135deg, #0095F6, #0076C3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .brand-content {
+            position: relative;
+            z-index: 2;
+            padding: 3rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+        }
+        
+        .brand-headline {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .brand-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 80%;
+        }
+        
+        .auth-form-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .auth-form-wrapper {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+            border-radius: 50%;
+            background-color: #0095F6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .auth-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 16px;
+            color: #8E8E8E;
+        }
+        
+        .auth-error-message {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: rgba(237, 73, 86, 0.1);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #ED4956;
+        }
+        
+        .error-icon {
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .auth-form {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #262626;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8E8E8E;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #DBDBDB;
+            border-radius: 8px;
+            font-size: 24px;
+            transition: all 0.2s ease;
+            text-align: center;
+            letter-spacing: 0.3rem; /* Adjusted for 6 digits */
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #0095F6;
+            box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #0095F6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-button:hover {
+            background-color: #0076C3;
+        }
+        
+        .auth-button .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        .auth-button.loading .spinner {
+            display: inline-block;
+        }
+        
+        .auth-button.loading .button-text {
+            display: none;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #8E8E8E;
+        }
+        
+        .auth-footer a {
+            color: #0095F6;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .info-message {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 16px;
+            color: #8E8E8E;
+        }
+        
+        .email-display {
+            font-weight: 600;
+            color: #262626;
+        }
+        
+        .timer {
+            text-align: center;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 14px;
+            color: #8E8E8E;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive Styles */
+        @media (min-width: 1024px) {
+            .brand-panel {
+                display: block;
+                width: 60%;
+            }
+            
+            .auth-form-container {
+                width: 40%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .auth-form-wrapper {
+                padding: 2rem;
+            }
+        }
+    </style>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Brand Panel (visible on desktop) -->
+        <div class="brand-panel">
+            <div class="brand-content">
+                <div class="auth-logo">F</div>
+                <h1 class="brand-headline">Almost there!</h1>
+                <p class="brand-description">Verify your email to join the FOUNDER CONNECT community and start connecting with founders and investors.</p>
+            </div>
+        </div>
+        
+        <!-- Auth Form Container -->
+        <div class="auth-form-container">
+            <div class="auth-form-wrapper">
+                <div class="auth-header">
+                    <div class="auth-logo">F</div>
+                    <h1 class="auth-title">Verify Your Email</h1>
+                    <p class="auth-subtitle">Enter the code we sent you</p>
+                </div>
+                
+                <div class="info-message">
+                    We've sent a verification code to <span class="email-display" id="email-display"></span>
+                </div>
+                
+                <div id="error-container"></div>
+                
+                <form id="otp-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="otp">Verification Code</label>
+                        <input 
+                            type="text" 
+                            id="otp" 
+                            name="otp" 
+                            class="form-input" 
+                            maxlength="6" 
+                            required
+                            autocomplete="off"
+                        >
+                    </div>
+                    
+                    <div class="timer" id="timer">Code expires in: 5:00</div>
+                    
+                    <button type="submit" class="auth-button" id="verify-button">
+                        <span class="spinner"></span>
+                        <span class="button-text">Verify</span>
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    Didn't receive the code? <a id="resend-otp">Resend</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Display email from session storage
+        const email = sessionStorage.getItem('email');
+        document.getElementById('email-display').textContent = email || 'your email';
+        
+        // Timer functionality
+        let timeLeft = 300; // 5 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `Code expires in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                timerElement.textContent = 'Code expired';
+                timerElement.style.color = '#ED4956';
+            }
+        }, 1000);
+        
+        // Show error message
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.innerHTML = `
+                <div class="auth-error-message">
+                    <svg class="error-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM11 15H9V13H11V15ZM11 11H9V5H11V11Z" fill="#ED4956"/>
+                    </svg>
+                    ${message}
+                </div>
+            `;
+        }
+        
+        // Form submission
+        document.getElementById('otp-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const otp = document.getElementById('otp').value;
+            const email = sessionStorage.getItem('email');
+            const verifyButton = document.getElementById('verify-button');
+            
+            // Show loading state
+            verifyButton.classList.add('loading');
+            
+            try {
+                const response = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Redirect to login page or dashboard
+                    window.location.href = data.redirectUrl || '/login';
+                } else {
+                    // Show error message
+                    showError(data.message || 'Invalid verification code. Please try again.');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError('An error occurred. Please try again later.');
+            } finally {
+                // Hide loading state
+                verifyButton.classList.remove('loading');
+            }
+        });
+        
+        // Resend OTP
+        document.getElementById('resend-otp').addEventListener('click', async function() {
+            const email = sessionStorage.getItem('email');
+            
+            if (!email) {
+                showError('Email not found. Please try signing up again.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Reset timer
+                    clearInterval(timer);
+                    timeLeft = 300;
+                    timerElement.style.color = '#8E8E8E';
+                    
+                    // Show success message
+                    const errorContainer = document.getElementById('error-container');
+                    errorContainer.innerHTML = `
+                        <div class="auth-error-message" style="background-color: rgba(0, 200, 83, 0.1); color: #00C853;">
+                            <svg class="error-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM8 15L3 10L4.41 8.59L8 12.17L15.59 4.58L17 6L8 15Z" fill="#00C853"/>
+                            </svg>
+                            New verification code sent successfully.
+                        </div>
+                    `;
+                    
+                    // Start timer again
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        const minutes = Math.floor(timeLeft / 60);
+                        const seconds = timeLeft % 60;
+                        timerElement.textContent = `Code expires in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                        
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            timerElement.textContent = 'Code expired';
+                            timerElement.style.color = '#ED4956';
+                        }
+                    }, 1000);
+                } else {
+                    showError(data.message || 'Failed to resend verification code. Please try again.');
+                }
+            } catch (error) {
+                console.error('Resend OTP error:', error);
+                showError('An error occurred. Please try again later.');
+            }
+        });
+    </script>
+</body>
+</html>

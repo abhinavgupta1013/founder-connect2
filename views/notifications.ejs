@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Founder Connect</title>
+    <link rel="stylesheet" href="/css/common-layout.css">
+    <link rel="stylesheet" href="/css/modern-profile.css"> <!-- Assuming some shared styles -->
+    <link rel="stylesheet" href="/css/notification-page.css"> <!-- Specific styles for this page -->
+    <link rel="stylesheet" href="/css/notification-toast.css"> <!-- Styles for toast notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">Founder Connect</div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home nav-icon"></i>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/explore" class="nav-link">
+                        <i class="fas fa-compass nav-icon"></i>
+                        Explore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/notifications" class="nav-link active">
+                        <i class="fas fa-bell nav-icon"></i>
+                        Notifications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/messages" class="nav-link" id="messages-nav">
+                        <i class="fas fa-envelope nav-icon"></i>
+                        Messages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/modern-profile" class="nav-link">
+                        <i class="fas fa-user nav-icon"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-section-title">DISCOVER</div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/founders" class="nav-link">
+                        <i class="fas fa-users nav-icon"></i>
+                        Founders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/investors" class="nav-link">
+                        <i class="fas fa-briefcase nav-icon"></i>
+                        Investors
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/manufacturers" class="nav-link">
+                        <i class="fas fa-industry nav-icon"></i>
+                        Manufacturers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/interns" class="nav-link">
+                        <i class="fas fa-graduation-cap nav-icon"></i>
+                        Interns
+                    </a>
+                </li>
+
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar"><%= user && user.name ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+                    <div class="user-info">
+                        <div class="user-name"><%= user ? user.name : 'Guest User' %></div>
+                        <div class="user-role"><%= user ? user.role || 'Member' : 'Not logged in' %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="content">
+            
+            <div class="notifications-container" id="notifications-container">
+                <!-- Notifications will be loaded here -->
+                <% if (notifications && notifications.length > 0) { %>
+                    <h1 class="page-title">Notifications</h1>
+                    <ul class="notification-list">
+                    <% notifications.forEach(notification => { %>
+                        <li class="notification-item <%= notification.read ? 'read' : 'unread' %>" data-id="<%= notification._id %>">
+                            <!-- Profile Picture -->
+                            <div class="notification-profile">
+                                <% if (notification.sender && notification.sender.avatar) { %>
+                                    <img src="<%= notification.sender.avatar %>" alt="<%= notification.sender.name %>" class="profile-pic">
+                                <% } else { %>
+                                    <div class="profile-pic-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                            
+                            <!-- Notification Content -->
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <p class="notification-message">
+                                        <% if (notification.sender && notification.sender.name) { %>
+                                            <strong><%= notification.sender.name %></strong> 
+                                        <% } %>
+                                        <%= notification.message %>
+                                    </p>
+                                    <span class="notification-timestamp"><%= new Date(notification.createdAt).toLocaleString() %></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons for Connection Requests -->
+                            <% if (notification.type === 'connection_request' && notification.sender && notification.sender._id) { %>
+                                <div class="notification-actions">
+                                    <button class="btn-accept accept-request" data-from-user-id="<%= notification.sender._id %>">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn-reject reject-request" data-from-user-id="<%= notification.sender._id %>">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            <% } %>
+                            
+                            <!-- Type Icon -->
+                            <div class="notification-type-icon">
+                                <% if (notification.type === 'connection_request') { %><i class="fas fa-user-plus"></i>
+                                <% } else if (notification.type === 'connection_accepted') { %><i class="fas fa-user-check"></i>
+                                <% } else if (notification.type === 'connection_rejected') { %><i class="fas fa-user-times"></i>
+                                <% } else if (notification.type === 'post_like') { %><i class="fas fa-heart"></i>
+                                <% } else if (notification.type === 'post_comment') { %><i class="fas fa-comment"></i>
+                                <% } else { %><i class="fas fa-bell"></i><% } %>
+                            </div>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>No notifications yet.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/notification.js"></script> <!-- General notification display script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Socket.IO for real-time updates if user is logged in
+            if (typeof user !== 'undefined' && user && user._id) { 
+                const currentUserId = '<%= user._id %>';
+                if (typeof initializeSocketForNotifications === 'function') {
+                    initializeSocketForNotifications(currentUserId);
+                } else {
+                    console.error('initializeSocketForNotifications function not found.');
+                }
+            } else { 
+                console.log('User not logged in, not initializing socket for notifications.');
+            }
+
+            // Handle accept/reject buttons on this page
+            document.querySelectorAll('.accept-request').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const fromUserId = this.dataset.fromUserId;
+                    if (window.confirm('Are you sure you want to accept this connection request?')) {
+                        if (window.handleConnectionAction) {
+                            await window.handleConnectionAction(fromUserId, 'accept');
+                            this.closest('.notification-item').classList.add('notification-accepted');
+                            this.closest('.notification-item').querySelector('.notification-actions').innerHTML = '<span class="status-label accepted">Accepted</span>';
+                            setTimeout(() => this.closest('.notification-item').remove(), 1200);
+                            if (window.localStorage) {
+                                localStorage.setItem('connections_updated', Date.now());
+                            }
+                        } else {
+                            console.error('handleConnectionAction not defined in global scope.');
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.reject-request').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const fromUserId = this.dataset.fromUserId;
+                    if (window.confirm('Are you sure you want to decline this connection request?')) {
+                        if (window.handleConnectionAction) {
+                            await window.handleConnectionAction(fromUserId, 'reject');
+                            this.closest('.notification-item').classList.add('notification-declined');
+                            this.closest('.notification-item').querySelector('.notification-actions').innerHTML = '<span class="status-label declined">Declined</span>';
+                            setTimeout(() => this.closest('.notification-item').remove(), 1200);
+                            if (window.localStorage) {
+                                localStorage.setItem('connections_updated', Date.now());
+                            }
+                        } else {
+                            console.error('handleConnectionAction not defined in global scope.');
+                        }
+                    }
+                });
+            });
+
+            // Mark notification as read (example - could be on click or scroll)
+            // This would typically involve an API call to update the 'read' status in the DB
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.addEventListener('click', async () => {
+                    const notificationId = item.dataset.id;
+                    try {
+                        // Example: API call to mark as read
+                        // const response = await fetch(`/api/notifications/${notificationId}/read`, { method: 'PATCH' });
+                        // if (response.ok) {
+                        //     item.classList.remove('unread');
+                        //     item.classList.add('read');
+                        // } else {
+                        //     console.error('Failed to mark notification as read');
+                        // }
+                        console.log(`Notification ${notificationId} clicked, implement mark as read.`);
+                        item.classList.remove('unread');
+                        item.classList.add('read'); // Optimistic update
+                    } catch (error) {
+                        console.error('Error marking notification as read:', error);
+                    }
+                });
+            });
+        });
+
+        // Ensure handleConnectionAction is available if not already global from notification.js
+        // This is a simplified version, ideally it's part of a shared utility or notification.js itself
+        if (typeof window.handleConnectionAction === 'undefined') {
+            window.handleConnectionAction = async function(targetUserId, action) {
+                try {
+                    const response = await fetch('/api/connections/respond', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Add CSRF token header if your app uses them
+                        },
+                        body: JSON.stringify({ requestFromUserId: targetUserId, action: action })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        console.log(`Connection ${action} successful for user ${targetUserId}`);
+                        // Optionally show a success toast/pop-up notification here
+                        // showNotification('Connection Update', result.message, 'success');
+                    } else {
+                        console.error(`Failed to ${action} connection:`, result.message);
+                        // showNotification('Connection Error', result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error in handleConnectionAction:', error);
+                    // showNotification('Connection Error', 'An unexpected error occurred.', 'error');
+                }
+            };
+        }
+    </script>
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <ul class="mobile-nav-menu">
+            <li class="mobile-nav-item">
+                <a href="/" class="mobile-nav-link">
+                    <i class="fas fa-home mobile-nav-icon"></i>
+                    Home
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/explore" class="mobile-nav-link">
+                    <i class="fas fa-compass mobile-nav-icon"></i>
+                    Explore
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/notifications" class="mobile-nav-link active">
+                    <i class="fas fa-bell mobile-nav-icon"></i>
+                    Notifications
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/messages" class="mobile-nav-link">
+                    <i class="fas fa-envelope mobile-nav-icon"></i>
+                    Messages
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/modern-profile" class="mobile-nav-link">
+                    <i class="fas fa-user mobile-nav-icon"></i>
+                    Profile
+                </a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

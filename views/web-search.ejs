@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Research Assistant</title>
+    <link rel="stylesheet" href="/css/common-layout.css">
+    <style>
+        .search-container {
+            max-width: 800px;
+            max-height: 80vh; /* Limit height to 80% of viewport height */
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* Enable vertical scrolling */
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+            scrollbar-width: thin; /* For Firefox */
+            scrollbar-color: #0066cc #f0f0f0; /* For Firefox */
+            position: relative; /* Required for the scrollable shadow effect */
+        }
+        
+        .search-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+        
+        .search-button {
+            padding: 12px 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .search-button:hover {
+            background-color: #0055aa;
+        }
+        
+        .results-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #0066cc #f0f0f0;
+            position: relative;
+        }
+        
+        /* Scrollbar styling for WebKit browsers (Chrome, Safari) */
+        .results-container::-webkit-scrollbar,
+        .search-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .results-container::-webkit-scrollbar-track,
+        .search-container::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        
+        .results-container::-webkit-scrollbar-thumb,
+        .search-container::-webkit-scrollbar-thumb {
+            background-color: #0066cc;
+            border-radius: 4px;
+        }
+        
+        /* Add a subtle shadow at the bottom to indicate scrollable content */
+        .results-container::after,
+        .search-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .results-container::after {
+            background: linear-gradient(to top, rgba(249, 249, 249, 0.9), rgba(249, 249, 249, 0));
+        }
+        
+        .search-container::after {
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+        }
+        
+        .results-container.scrollable::after,
+        .search-container.scrollable::after {
+            display: block;
+        }
+        
+        .loading {
+            text-align: center;
+            margin: 30px 0;
+            display: none;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0066cc;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .example-queries {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        
+        .example-queries h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .example-queries ul {
+            padding-left: 20px;
+        }
+        
+        .example-queries li {
+            margin-bottom: 8px;
+            cursor: pointer;
+            color: #0066cc;
+        }
+        
+        .example-queries li:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav-header') %>
+    
+    <div class="search-container">
+        <div class="search-header">
+            <h1>Business Research Assistant</h1>
+            <p>Ask any business question and get expert recommendations based on web research</p>
+        </div>
+        
+        <div class="search-form">
+            <input type="text" id="searchInput" class="search-input" placeholder="e.g., Find investors for AI startups" autofocus>
+            <button id="searchButton" class="search-button">Search</button>
+        </div>
+        
+        <div class="example-queries">
+            <h3>Try these example queries:</h3>
+            <ul>
+                <li class="example-query">Find investors for AI startups</li>
+                <li class="example-query">What are the latest trends in fintech?</li>
+                <li class="example-query">How to approach venture capital firms</li>
+                <li class="example-query">List of top accelerators for SaaS companies</li>
+                <li class="example-query">Market analysis for blockchain technology</li>
+            </ul>
+        </div>
+        
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Researching the web for the best recommendations...</p>
+            <p><small>This may take up to 30 seconds</small></p>
+        </div>
+        
+        <div id="errorDisplay" style="color: #d9534f; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px; margin-top: 20px; display: none;"></div>
+        <div id="resultsContainer" class="results-container"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const searchContainer = document.querySelector('.search-container');
+            const loadingElement = document.querySelector('.loading');
+            const exampleQueries = document.querySelectorAll('.example-query');
+            
+            // Check if search container is scrollable
+            function checkSearchContainerScrollable() {
+                if (searchContainer.scrollHeight > searchContainer.clientHeight) {
+                    searchContainer.classList.add('scrollable');
+                } else {
+                    searchContainer.classList.remove('scrollable');
+                }
+            }
+            
+            // Initial check
+            setTimeout(checkSearchContainerScrollable, 100);
+            
+            // Check on window resize
+            window.addEventListener('resize', checkSearchContainerScrollable);
+            
+            // Handle example query clicks
+            exampleQueries.forEach(query => {
+                query.addEventListener('click', function() {
+                    searchInput.value = this.textContent;
+                    searchButton.click();
+                });
+            });
+            
+            // Handle search button click
+            searchButton.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                
+                if (!query) {
+                    alert('Please enter a search query');
+                    return;
+                }
+                
+                // Show loading indicator
+                loadingElement.style.display = 'block';
+                resultsContainer.style.display = 'none';
+                
+                // Make API request
+                fetch('/api/web-search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    // Hide loading indicator
+                    loadingElement.style.display = 'none';
+                    
+                    // Clear previous errors
+                    const errorDisplay = document.getElementById('errorDisplay');
+                    errorDisplay.style.display = 'none';
+                    errorDisplay.textContent = '';
+                    
+                    if (!response.ok) {
+                        // Display the user-friendly message from the server
+                        errorDisplay.textContent = 'Error: ' + (data.message || 'The search service is temporarily unavailable. Please try again later.');
+                        errorDisplay.style.display = 'block';
+                        resultsContainer.style.display = 'none';
+                        return;
+                    }
+                    
+                    if (data.success) {
+                        // Format and display results
+                        let recommendation = '';
+                        
+                        if (typeof data.data === 'object' && data.data.recommendation) {
+                            recommendation = data.data.recommendation;
+                        } else {
+                            recommendation = data.data;
+                        }
+                        
+                        // Convert markdown-style formatting to HTML
+                        recommendation = recommendation
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // Bold
+                            .replace(/\*(.*?)\*/g, '<em>$1</em>')              // Italic
+                            .replace(/^# (.*$)/gm, '<h1>$1</h1>')              // H1
+                            .replace(/^## (.*$)/gm, '<h2>$1</h2>')             // H2
+                            .replace(/^### (.*$)/gm, '<h3>$1</h3>')            // H3
+                            .replace(/^- (.*$)/gm, '<li>$1</li>')              // List items
+                            .replace(/<li>(.*)<\/li>/g, '<ul><li>$1</li></ul>') // Wrap list items
+                            .replace(/<\/ul><ul>/g, '')                        // Fix adjacent lists
+                            .replace(/\n/g, '<br>');                           // Line breaks
+                        
+                        resultsContainer.innerHTML = recommendation;
+                        resultsContainer.style.display = 'block';
+                        
+                        // Check if content is scrollable and add class accordingly
+                        setTimeout(() => {
+                            if (resultsContainer.scrollHeight > resultsContainer.clientHeight) {
+                                resultsContainer.classList.add('scrollable');
+                            } else {
+                                resultsContainer.classList.remove('scrollable');
+                            }
+                        }, 100); // Small delay to ensure content is rendered
+                    } else {
+                        errorDisplay.textContent = 'Error: ' + (data.message || 'Something went wrong');
+                        errorDisplay.style.display = 'block';
+                        resultsContainer.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    loadingElement.style.display = 'none';
+                    const errorDisplay = document.getElementById('errorDisplay');
+                    errorDisplay.textContent = 'Error: Could not connect to the server. Please try again later.';
+                    errorDisplay.style.display = 'block';
+                    resultsContainer.style.display = 'none';
+                });
+            });
+            
+            // Handle Enter key press
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

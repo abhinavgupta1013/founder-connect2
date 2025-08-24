@@ -1,0 +1,292 @@
+<%- include('partials/nav-header') %>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">Investor Outreach</h3>
+        </div>
+        <div class="card-body">
+          <div id="statusAlert" class="alert d-none" role="alert"></div>
+          
+          <form id="outreachForm">
+            <div class="mb-3">
+              <label for="topic" class="form-label">Email Topic</label>
+              <input type="text" class="form-control" id="topic" required 
+                     placeholder="e.g., Seed funding for AI-powered healthcare startup">
+            </div>
+            
+            <div class="mb-3">
+              <label for="guidelines" class="form-label">Content Guidelines</label>
+              <textarea class="form-control" id="guidelines" rows="4" required
+                        placeholder="Describe your startup, funding needs, traction, and what you're looking for from investors"></textarea>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="fromName" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="fromName" required>
+              </div>
+              <div class="col-md-6">
+                <label for="fromEmail" class="form-label">Your Email</label>
+                <input type="email" class="form-control" id="fromEmail" required>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <h5>Investor Contacts</h5>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Email</th>
+                      <th>Domain</th>
+                    </tr>
+                  </thead>
+                  <tbody id="contactsList">
+                    <tr>
+                      <td>capital@fundingpartners.com</td>
+                      <td>fundingpartners.com</td>
+                    </tr>
+                    <tr>
+                      <td>funding@startupvc.com</td>
+                      <td>startupvc.com</td>
+                    </tr>
+                    <tr>
+                      <td>partner@angelinvestors.com</td>
+                      <td>angelinvestors.com</td>
+                    </tr>
+                    <tr>
+                      <td>support@investornetwork.com</td>
+                      <td>investornetwork.com</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="button" id="previewBtn" class="btn btn-secondary">Preview Email</button>
+              <button type="submit" id="sendBtn" class="btn btn-primary">Draft & Send Emails</button>
+            </div>
+          </form>
+          
+          <!-- Email Preview Modal -->
+          <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Email Preview</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div id="emailPreview" class="border p-3"></div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" id="confirmSendBtn" class="btn btn-primary">Send Emails</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Results Modal -->
+          <div class="modal fade" id="resultsModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Email Sending Results</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div id="resultsContent"></div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Parse URL parameters
+function getUrlParams() {
+  const params = {};
+  window.location.search.substring(1).split('&').forEach(pair => {
+    const [key, value] = pair.split('=');
+    params[decodeURIComponent(key)] = decodeURIComponent(value);
+  });
+  return params;
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const outreachForm = document.getElementById('outreachForm');
+  const previewBtn = document.getElementById('previewBtn');
+  const sendBtn = document.getElementById('sendBtn');
+  const confirmSendBtn = document.getElementById('confirmSendBtn');
+  const statusAlert = document.getElementById('statusAlert');
+  const emailPreview = document.getElementById('emailPreview');
+  const resultsContent = document.getElementById('resultsContent');
+  
+  let draftedEmail = '';
+  
+  // Preview email
+  previewBtn.addEventListener('click', async function() {
+    const topic = document.getElementById('topic').value;
+    const guidelines = document.getElementById('guidelines').value;
+    
+    if (!topic || !guidelines) {
+      showAlert('Please fill in both topic and guidelines fields.', 'danger');
+      return;
+    }
+    
+    try {
+      showAlert('Drafting email...', 'info');
+      
+      const response = await fetch('/api/investor-outreach/draft', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ topic, guidelines })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        draftedEmail = data.emailContent;
+        emailPreview.innerHTML = draftedEmail;
+        new bootstrap.Modal(document.getElementById('previewModal')).show();
+        statusAlert.classList.add('d-none');
+      } else {
+        showAlert('Failed to draft email: ' + data.message, 'danger');
+      }
+    } catch (error) {
+      showAlert('Error: ' + error.message, 'danger');
+    }
+  });
+  
+  // Auto-send emails
+  sendBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+    
+    const topic = document.getElementById('topic').value;
+    const guidelines = document.getElementById('guidelines').value;
+    const fromName = document.getElementById('fromName').value;
+    const fromEmail = document.getElementById('fromEmail').value;
+    
+    if (!topic || !guidelines || !fromName || !fromEmail) {
+      showAlert('Please fill in all required fields.', 'danger');
+      return;
+    }
+    
+    try {
+      showAlert('Processing your request...', 'info');
+      
+      const response = await fetch('/api/investor-outreach/auto-send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ topic, guidelines, fromName, fromEmail })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        showResults(data);
+      } else {
+        showAlert('Failed to process request: ' + data.message, 'danger');
+      }
+    } catch (error) {
+      showAlert('Error: ' + error.message, 'danger');
+    }
+  });
+  
+  // Confirm and send from preview modal
+  confirmSendBtn.addEventListener('click', async function() {
+    const fromName = document.getElementById('fromName').value;
+    const fromEmail = document.getElementById('fromEmail').value;
+    
+    if (!draftedEmail || !fromName || !fromEmail) {
+      showAlert('Missing required information.', 'danger');
+      return;
+    }
+    
+    try {
+      showAlert('Sending emails...', 'info');
+      
+      const response = await fetch('/api/investor-outreach/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          fromName, 
+          fromEmail, 
+          emailContent: draftedEmail 
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        bootstrap.Modal.getInstance(document.getElementById('previewModal')).hide();
+        showResults(data);
+      } else {
+        showAlert('Failed to send emails: ' + data.message, 'danger');
+      }
+    } catch (error) {
+      showAlert('Error: ' + error.message, 'danger');
+    }
+  });
+  
+  // Helper function to show alerts
+  function showAlert(message, type) {
+    statusAlert.textContent = message;
+    statusAlert.className = `alert alert-${type}`;
+    statusAlert.classList.remove('d-none');
+  }
+  
+  // Helper function to show results
+  function showResults(data) {
+    let html = '<h5>Email Content</h5>';
+    html += `<div class="border p-3 mb-3">${data.emailContent || draftedEmail}</div>`;
+    
+    html += '<h5>Sending Results</h5>';
+    
+    if (data.results.sent && data.results.sent.length > 0) {
+      html += '<div class="alert alert-success">';
+      html += '<strong>Successfully sent to:</strong>';
+      html += '<ul>';
+      data.results.sent.forEach(email => {
+        html += `<li>${email}</li>`;
+      });
+      html += '</ul></div>';
+    }
+    
+    if (data.results.failed && data.results.failed.length > 0) {
+      html += '<div class="alert alert-danger">';
+      html += '<strong>Failed to send to:</strong>';
+      html += '<ul>';
+      data.results.failed.forEach(item => {
+        html += `<li>${item.email}: ${item.error}</li>`;
+      });
+      html += '</ul></div>';
+    }
+    
+    resultsContent.innerHTML = html;
+    new bootstrap.Modal(document.getElementById('resultsModal')).show();
+    statusAlert.classList.add('d-none');
+  }
+});
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

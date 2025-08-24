@@ -1,0 +1,344 @@
+/**
+ * FoundrConnect Social Features Styles
+ * Styles for connections, messaging, and analytics
+ */
+
+/* Connections Tab */
+.connections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.connection-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.connection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.connection-link {
+    display: flex;
+    padding: 15px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.connection-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.connection-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.connection-info {
+    flex: 1;
+}
+
+.connection-name {
+    margin: 0 0 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.connection-title {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.connection-actions {
+    padding: 0 15px 15px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Message Modal */
+#message-modal .modal-content {
+    max-width: 500px;
+}
+
+#message-modal .form-group {
+    margin-bottom: 20px;
+}
+
+#message-modal label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#message-modal input,
+#message-modal textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+#message-modal textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Analytics */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.analytics-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.analytics-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: rgba(75, 192, 192, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.analytics-icon i {
+    font-size: 24px;
+    color: rgba(75, 192, 192, 1);
+}
+
+.analytics-data h3 {
+    margin: 0 0 5px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.analytics-data p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.analytics-trend {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.analytics-trend.positive {
+    color: #4caf50;
+}
+
+.analytics-trend.negative {
+    color: #f44336;
+}
+
+.analytics-section {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.analytics-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.analytics-chart {
+    height: 300px;
+    position: relative;
+}
+
+.top-visitors {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.visitor-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease;
+}
+
+.visitor-item:hover {
+    background-color: #f0f0f0;
+}
+
+.visitor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.visitor-info {
+    flex: 1;
+}
+
+.visitor-info h4 {
+    margin: 0 0 3px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.visitor-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.visitor-count {
+    font-size: 14px;
+    color: #666;
+}
+
+.visitor-count span {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Notifications */
+#notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 350px;
+}
+
+.notification {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: slide-in 0.3s ease-out forwards;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.notification.fade-out {
+    opacity: 0;
+}
+
+.notification.success {
+    border-left: 4px solid #4caf50;
+}
+
+.notification.error {
+    border-left: 4px solid #f44336;
+}
+
+.notification.info {
+    border-left: 4px solid #2196f3;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #f9f9f9;
+}
+
+.notification-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.close-notification {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    line-height: 1;
+}
+
+.notification-body {
+    padding: 12px 15px;
+}
+
+.notification-body p {
+    margin: 0;
+    font-size: 14px;
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .connections-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    .analytics-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    
+    .analytics-chart {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .connections-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #notification-container {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+    }
+}

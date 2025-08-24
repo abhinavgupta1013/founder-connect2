@@ -1,0 +1,149 @@
+/* notification-toast.css */
+
+:root {
+    --toast-success: #4CAF50;
+    --toast-error: #F44336;
+    --toast-info: #2196F3;
+    --toast-warning: #FF9800;
+    --toast-background: #ffffff;
+    --toast-text-color: #333;
+    --toast-border-radius: 8px;
+    --toast-shadow: rgba(0, 0, 0, 0.15);
+}
+
+#toast-notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast-notification {
+    background-color: var(--toast-background);
+    color: var(--toast-text-color);
+    padding: 15px 20px;
+    border-radius: var(--toast-border-radius);
+    box-shadow: 0 4px 15px var(--toast-shadow);
+    width: 320px;
+    max-width: 90vw;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-left: 5px solid;
+}
+
+.toast-notification-show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-notification-hiding {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.toast-notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.toast-notification-title {
+    flex-grow: 1;
+}
+
+.toast-notification-close {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 0;
+}
+
+.toast-notification-close:hover {
+    color: #666;
+}
+
+.toast-notification-body p {
+    margin: 0;
+    font-size: 0.95em;
+    line-height: 1.4;
+}
+
+.toast-notification-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-toast-accept,
+.btn-toast-reject {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-toast-accept {
+    background-color: var(--toast-success);
+    color: white;
+}
+
+.btn-toast-accept:hover {
+    background-color: #45a049;
+}
+
+.btn-toast-reject {
+    background-color: var(--toast-error);
+    color: white;
+}
+
+.btn-toast-reject:hover {
+    background-color: #da190b;
+}
+
+/* Type specific borders */
+.toast-notification-success {
+    border-color: var(--toast-success);
+}
+
+.toast-notification-error {
+    border-color: var(--toast-error);
+}
+
+.toast-notification-info {
+    border-color: var(--toast-info);
+}
+
+.toast-notification-warning {
+    border-color: var(--toast-warning);
+}
+
+@media (max-width: 600px) {
+    #toast-notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+    }
+
+    .toast-notification {
+        width: auto;
+        max-width: none;
+    }
+}

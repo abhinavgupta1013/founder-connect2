@@ -1,0 +1,164 @@
+/* Feed Styles */
+
+/* Card Media Styles */
+.card-media {
+    margin: 15px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    max-height: 400px;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.post-video {
+    width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+}
+
+/* User Profile Link Styles */
+.user-profile-link {
+    color: #6200ea;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.user-profile-link:hover {
+    color: #5000ca;
+    text-decoration: underline;
+}
+
+/* Like Button Styles */
+.like-button {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.like-button:hover {
+    transform: scale(1.1);
+}
+
+.like-button i.liked {
+    color: #e74c3c;
+}
+
+/* Comments Section Styles */
+.comments-section {
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.comments-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.no-comments {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    padding: 10px;
+}
+
+.comment {
+    display: flex;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.comment:last-child {
+    border-bottom: none;
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #6200ea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-author {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.comment-text {
+    margin-bottom: 5px;
+    word-break: break-word;
+}
+
+.comment-time {
+    font-size: 0.8em;
+    color: #888;
+}
+
+.comment-form {
+    display: flex;
+    margin-top: 10px;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+}
+
+.comment-input:focus {
+    border-color: #6200ea;
+}
+
+.comment-submit {
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.comment-submit:hover {
+    background-color: #5000ca;
+}
+
+/* Comment Toggle */
+.comment-toggle {
+    cursor: pointer;
+}
+
+/* Empty Feed Message */
+.empty-feed-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 1.1em;
+}
+
+.empty-feed-message i {
+    font-size: 3em;
+    margin-bottom: 15px;
+    color: #6200ea;
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+  <!-- Stylized 'F' letter in dark blue -->
+  <path d="M90 50 H170 V80 H120 V100 H160 V130 H120 V170 H90 Z" fill="#1a2e3b"/>
+  
+  <!-- Text "Founder Connect" -->
+  <text x="15" y="270" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#1a2e3b">Founder</text>
+  <text x="15" y="330" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#1a2e3b">Connect</text>
+</svg>
